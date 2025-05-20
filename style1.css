@@ -1,0 +1,20 @@
+body{
+    margin: 0;
+    padding: 0;
+    background-color:navy;
+    font-family:'Courier New', Courier, monospace ;
+    box-sizing: border-box;
+}
+.offcanvas-btn {
+        background-color: rgba(0, 0, 0, 0.1); 
+        color: white;
+        border: none; 
+     }
+.offcanvas-btn:hover {
+        background-color: rgba(0, 0, 0, 0.2);
+ }
+ .card-title {
+    text-align: center;
+    color: rgb(3,3,48);
+    font-weight: bolder;
+ }

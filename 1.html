@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Calendar Generator</title>
+</head>
+<body>
+<h2>Select Month and Year</h2>
+<h4>Code by Chaksh</h4>
+<select id="month">
+<option value="0">January</option>
+<option value="1">February</option>
+<option value="2">March</option>
+<option value="3">April</option>
+<option value="4">May</option>
+<option value="5">June</option>
+<option value="6">July</option>
+<option value="7">August</option>
+<option value="8">September</option>
+<option value="9">October</option>
+<option value="10">November</option>
+<option value="11">December</option>
+</select>
+<select id="year">
+<script>
+for (let y = 1990; y <= 2030; y++) {
+document.write("<option value='" + y + "'>" + y + "</option>");
+}
+</script>
+</select>
+<button onclick="generateCalendar()">Show Calendar</button>
+<div id="calendar"></div>
+<script>
+function generateCalendar(){
+let month = document.getElementById("month").value;
+let year = document.getElementById("year").value;
+let firstDay= new Date(year, month, 1).getDay();
+let daysInMonth = new Date(year, parseInt(month) + 1, 0).getDate();
+let calendar ="<table border='1' cellpadding='5'><tr>";
+let days= ["Sun", "Mon", "Tue", "wed", "Thu", "Fri", "sat"];
+for (let d of days) { calendar += "<th>" + d + "</th>";}
+calendar += "</tr><tr>";
+
+for(let i = 0 ; i<firstDay ;i++){
+    calendar +="<td></td>";
+}
+for (let day =1; day < daysInMonth; day++) {
+calendar += "<td>"+day+ "</td>";
+if ((firstDay+day) %7==0) 
+{ calendar += "</tr><tr>"; }
+}
+calendar += "</tr></table>";
+document.getElementById("calendar").innerHTML= calendar; 
+}
+</script>
+</body>
+</html>

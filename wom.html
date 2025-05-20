@@ -1,0 +1,40 @@
+<html>
+    <body>
+        <h1>WOM</h1>
+        <button onclick="alertExample()">alert!</button>
+        <button onclick="example()">prompt</button>
+        <button onclick="confirmExample()">confirm</button>
+        <button onclick="window.open('https://google.com')">open link in new window</button>
+        <button onclick="newWindow.close()">close</button>
+        <button onclick="window.print()">print</button>
+        <p id =demo></p>
+        <p>To open a new window, click the button above. To close the new window, click the button below.</p>
+        <script>
+            function example() {
+                let person = prompt("Please enter your name", "abcdefgtdx");
+                let txt;
+                if (person == null || person == "") {
+                    txt = "User cancelled the prompt.";
+                } else {
+                    txt = "Hello " + person + "! How are you today?";
+                }
+                document.getElementById("demo").innerHTML = txt;
+            }
+            function alertExample() {
+                alert("This is an alert!");
+            }
+            function confirmExample() {
+                var text;
+                if (confirm("press a button to confirm")){
+                    text("u pressed ok!");
+                }
+                else{
+                    text("u pressed cancel!");
+                }
+                document.getElementById("demo").innerHTML=text;
+            }
+            let newWindow = window.open("https://google.com", "_blank", "width=600,height=400");
+            window.print();
+        </script>
+    </body>
+</html>
