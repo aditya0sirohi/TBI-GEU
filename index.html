@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Room</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">File Room</a>
+            </div>
+        </nav>
+    </header>
+
+    <section id="cardContent">
+        <div class="container mt-5 d-flex justify-content-center">
+            <div class="card" style="width: 20rem; color: darkslateblue;">
+                <div class="card-body">
+                    <h5 class="card-title">Upload your file</h5>
+                    <p class="card-text">File Room can store files up to 1GB.</p>
+                    <form id="uploadForm">
+                        <input type="file" id="fileInput" name="file" />
+                        <br /><br />
+                        <button type="submit" id="uploadBtn" class="btn btn-primary">Upload</button>
+                        <div id="uploadStatus" class="mt-2"></div>
+                        <p id="fileCode" style="color: green; font-weight: bold;"></p>
+                    </form>                    
+                </div>
+            </div>
+        </div>
+
+        <div class="container mt-3 d-flex justify-content-center">
+            <div class="card" style="width: 20rem; color: darkslateblue;">
+                <div class="card-body">
+                    <h5 class="card-title">Retrieve your file</h5>
+                    <p class="card-text">Enter the file code to download your file.</p>
+                    <form id="retrieveForm">
+                        <input type="text" id="fileCodeInput" placeholder="Enter file code" class="form-control" />
+                        <br />
+                        <button type="submit" id="retrieveBtn" class="btn btn-success">Retrieve File</button>
+                        <div id="retrieveStatus" class="mt-2"></div>
+                        <p id="fileResult" style="color: blue; font-weight: bold;"></p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    // Handle Upload
+    document.getElementById("uploadForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        
+        const statusEl = document.getElementById("uploadStatus");
+        statusEl.innerHTML = '<div class="alert alert-info">Uploading...</div>';
+        
+        const fileInput = document.getElementById("fileInput");
+        const file = fileInput.files[0];
+
+        if (!file) {
+            statusEl.innerHTML = '<div class="alert alert-danger">Please select a file.</div>';
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        // Log form data
+        console.log("File being uploaded:", file.name, "Size:", file.size, "Type:", file.type);
+
+        fetch("http://localhost:5000/upload", {
+            method: "POST",
+            body: formData,
+        })
+        .then((res) => {
+            console.log("Response status:", res.status);
+            return res.json();
+        })
+        .then((data) => {
+            console.log("Response data:", data);
+            if (data.code && data.fileUrl) {
+                statusEl.innerHTML = '<div class="alert alert-success">Upload successful!</div>';
+                document.getElementById("fileCode").innerHTML = `
+                    Your code: <strong>${data.code}</strong><br>
+                    <a href="${data.fileUrl}" target="_blank">Click to download</a>
+                `;
+            } else {
+                statusEl.innerHTML = '<div class="alert alert-danger">Upload failed.</div>';
+                document.getElementById("fileCode").innerText = "Error: " + (data.error || "Unknown error");
+            }
+        })
+        .catch((err) => {
+            console.error("Upload error:", err);
+            statusEl.innerHTML = '<div class="alert alert-danger">Upload error. Check console for details.</div>';
+        });
+    });
+
+    // Handle Retrieval
+    document.getElementById("retrieveForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const statusEl = document.getElementById("retrieveStatus");
+        statusEl.innerHTML = '<div class="alert alert-info">Searching...</div>';
+        
+        const code = document.getElementById("fileCodeInput").value.trim().toUpperCase();
+        if (!code) {
+            statusEl.innerHTML = '<div class="alert alert-danger">Please enter a code.</div>';
+            return;
+        }
+
+        fetch(`http://localhost:5000/retrieve/${code}`)
+            .then((res) => {
+                console.log("Retrieve status:", res.status);
+                return res.json();
+            })
+            .then((data) => {
+                console.log("Retrieve data:", data);
+                if (data.fileUrl) {
+                    statusEl.innerHTML = '<div class="alert alert-success">File found!</div>';
+                    document.getElementById("fileResult").innerHTML = `
+                        <a href="${data.fileUrl}" class="btn btn-primary" target="_blank">Download ${data.fileName || 'file'}</a>
+                    `;
+                } else {
+                    statusEl.innerHTML = '<div class="alert alert-warning">Not found</div>';
+                    document.getElementById("fileResult").innerText = data.error || "File not found.";
+                }
+            })
+            .catch((err) => {
+                console.error("Retrieval error:", err);
+                statusEl.innerHTML = '<div class="alert alert-danger">Error. Check console for details.</div>';
+            });
+    });
+    </script>
+</body>
+</html>
